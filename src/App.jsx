@@ -1,20 +1,16 @@
 import { Suspense, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { useGLTF, OrbitControls, ContactShadows, Html, Effects, PerspectiveCamera, Environment } from '@react-three/drei';
+import { useGLTF, OrbitControls, ContactShadows, Html, Environment } from '@react-three/drei';
 import * as THREE from 'three';
-
 import tunnel from 'tunnel-rat';
 import Hotspot from './assets/hotspot';
 import { EffectComposer, N8AO, SSR } from '@react-three/postprocessing';
-
-
 
 const status = tunnel();
 
 export default function App() {
   const [showProduct, setShowProduct] = useState(false);
 
-  // Toggle the visibility of the Product component when hotspot is clicked
   const handleHotspotClick = () => {
     setShowProduct((prev) => !prev);
   };
@@ -25,7 +21,7 @@ export default function App() {
         shadows
         gl={{
           outputEncoding: THREE.sRGBEncoding,
-          toneMapping: THREE.FilmicToneMapping,
+          toneMapping: THREE.ACESFilmicToneMapping, // Updated for consistency
           toneMappingExposure: 2,
         }}
       >
@@ -34,7 +30,7 @@ export default function App() {
 
         <group position={[0, -3, -3]}>
           <Suspense fallback={<status.In>Loading...</status.In>}>
-            <Model url='./model/club.glb' onHotspotClick={handleHotspotClick} />
+            <Model url="./model/club.glb" onHotspotClick={handleHotspotClick} />
           </Suspense>
           <ContactShadows position={[0, -2, -0.16]} />
         </group>
@@ -55,13 +51,13 @@ export default function App() {
         </Effects>
 
         <OrbitControls
-          enableZoom={true}
+          enableZoom
           minDistance={2}
           maxDistance={5}
           maxPolarAngle={Math.PI / 1.8}
           minPolarAngle={Math.PI / 3}
-          enableDamping={true}
-          enablePan={true}
+          enableDamping
+          enablePan
         />
       </Canvas>
     </div>
@@ -76,7 +72,6 @@ function Model({ url, onHotspotClick, ...props }) {
   return (
     <>
       <primitive object={scene} {...props} />
-
       {shirtObject && (
         <mesh
           position={new THREE.Vector3().setFromMatrixPosition(shirtObject.matrixWorld)}
@@ -87,10 +82,7 @@ function Model({ url, onHotspotClick, ...props }) {
             <Hotspot onClick={onHotspotClick} />
           </Html>
         </mesh>
-
-
       )}
     </>
-  ); 
-  
+  );
 }
